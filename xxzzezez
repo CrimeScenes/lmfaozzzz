@@ -361,25 +361,42 @@ end)
 local Player = game:GetService("Players").LocalPlayer
 local SpeedGlitch = false
 
+local function toggleSpeedGlitch()
+    SpeedGlitch = not SpeedGlitch
+    if SpeedGlitch then
+        local MacroType = getgenv().Macro.Settings.MacroType
+        local Speed = getgenv().Macro.Settings.Speed
+
+        if MacroType == "Third" then
+            repeat
+                task.wait(Speed / 100)
+                game:GetService("VirtualInputManager"):SendKeyEvent(true, "I", false, game)
+                task.wait(Speed / 100)
+                game:GetService("VirtualInputManager"):SendKeyEvent(true, "O", false, game)
+            until not SpeedGlitch or not getgenv().Macro.Settings.IsEnabled
+
+        elseif MacroType == "First" then
+            repeat
+                task.wait(Speed / 100)
+                game:GetService("VirtualInputManager"):SendMouseWheelEvent(0, 0, true, game)
+                task.wait(Speed / 100)
+                game:GetService("VirtualInputManager"):SendMouseWheelEvent(0, 0, false, game)
+            until not SpeedGlitch or not getgenv().Macro.Settings.IsEnabled
+        end
+    end
+end
+
 -- Listen for key presses
 Player:GetMouse().KeyDown:Connect(function(Key)
     -- Check if the macro is enabled
     if getgenv().Macro.Settings.IsEnabled then
         -- Check if the pressed key matches the defined MacroKey
         if Key == tostring(getgenv().Macro.Settings.MacroKey.Name):lower() then
-            SpeedGlitch = not SpeedGlitch
-            if SpeedGlitch then
-                repeat 
-                    game:GetService("RunService").Heartbeat:wait()
-                    game:GetService("VirtualInputManager"):SendMouseWheelEvent("0", "0", true, game)
-                    game:GetService("RunService").Heartbeat:wait()
-                    game:GetService("VirtualInputManager"):SendMouseWheelEvent("0", "0", false, game)
-                    game:GetService("RunService").Heartbeat:wait()
-                until not SpeedGlitch
-            end
+            toggleSpeedGlitch()
         end
     end
 end)
+
 
 
 -- Function to send a visual notification
